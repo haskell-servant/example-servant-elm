@@ -31,43 +31,55 @@ type alias State = {
 type alias ItemId = Int
 
 type Message
+  = FromServer FromServer
+  | FromUi FromUi
+
+  | Error String
+
+type FromServer
   = Initial (List ItemId)
   | NewItem Item
-  | Error String
-  | AddItemButton
-  | AddItemInputChange String
-  | Done ItemId
   | Delete ItemId
+
+type FromUi
+  = AddItemInputChange String
+  | AddItemButton
+  | Done ItemId
 
 init : (State, Cmd Message)
 init =
   let
-    fetch = perform (Error << toString) Initial Api.getApiItem
+    fetch = toServer Initial Api.getApiItem
     state = {items = empty, addItemInput = "", error = Nothing}
   in (state, fetch)
 
 update : Message -> State -> (State, Cmd Message)
 update message s = case message of
-  Initial itemIds ->
-    let
-      cmd : Cmd Message
-      cmd = Cmd.batch <|
-        List.map (perform (Error << toString) NewItem << getApiItemByItemId) itemIds
-    in (s, cmd)
-  NewItem item -> noop {s | items = insert item.id item s.items}
+  FromServer fromServer -> case fromServer of
+    Initial itemIds ->
+      let
+        cmd : Cmd Message
+        cmd = Cmd.batch <|
+          List.map (toServer NewItem << getApiItemByItemId) itemIds
+      in (s, cmd)
+    NewItem item -> noop {s | items = insert item.id item s.items}
+    Delete id -> noop <| {s | items = remove id s.items}
+
+  FromUi fromUi -> case fromUi of
+    AddItemButton -> (\ cmd -> (s, cmd)) <|
+      let
+        new = s.addItemInput
+      in toServer (\ id -> NewItem (Item id new)) (postApiItem new)
+    AddItemInputChange t -> noop {s | addItemInput = t}
+    Done id -> (s, toServer Delete (deleteApiItemByItemId id))
+
   Error msg -> ({s | error = Just msg}, Cmd.none)
-  AddItemButton -> (\ cmd -> (s, cmd)) <|
-    let
-      new = s.addItemInput
-    in perform (Error << toString)
-        (\ id -> NewItem (Item id new))
-        (postApiItem new)
-  AddItemInputChange t -> noop {s | addItemInput = t}
-  Done id -> (s, perform (Error << toString) Delete (deleteApiItemByItemId id))
-  Delete id -> noop <| {s | items = remove id s.items}
 
 noop : s -> (s, Cmd m)
 noop s = (s, Cmd.none)
+
+toServer : (a -> FromServer) -> Task Http.Error a -> Cmd Message
+toServer tag task = perform (Error << toString) (FromServer << tag) task
 
 view : State -> Html Message
 view state =
@@ -75,13 +87,16 @@ view state =
     text (toString state) ::
     br [] [] ::
     (List.map (viewItem << snd) (toList state.items)) ++
-    input [onInput AddItemInputChange] [] ::
-    button [onClick AddItemButton] [text "add item"] ::
+    input [onInput (FromUi << AddItemInputChange)] [] ::
+    button [onClick (FromUi AddItemButton)] [text "add item"] ::
     []
 
 mkUl : List (Html m) -> Html m
 mkUl list = ul [] (List.map (\ item -> li [] [item]) list)
 
 viewItem : Item -> Html Message
-viewItem item = div []
-  [text (item.text), text " - ", button [onClick (Done item.id)] [text "done"]]
+viewItem item = div [] <|
+  text (item.text) ::
+  text " - " ::
+  button [onClick (FromUi <| Done item.id)] [text "done"] ::
+  []
