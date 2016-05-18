@@ -28,3 +28,4 @@ tests:
       - hspec
       - servant-client
       - http-client
+      - http-types

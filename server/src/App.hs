@@ -64,13 +64,13 @@ insertItem (DB mvar) new = modifyMVar mvar $ \ m -> do
   return (insert newKey new m, newKey)
 
 lookupItem :: DB -> ItemId -> IO (Maybe Item)
-lookupItem (DB mvar) id = do
-  fmap (Item id) <$> Data.Map.lookup id <$> readMVar mvar
+lookupItem (DB mvar) i = do
+  fmap (Item i) <$> Data.Map.lookup i <$> readMVar mvar
 
 allItemIds :: DB -> IO [ItemId]
 allItemIds (DB mvar) =
   keys <$> readMVar mvar
 
 deleteItem :: MonadIO m => DB -> ItemId -> m ItemId
-deleteItem (DB mvar) id = liftIO $ modifyMVar mvar $ \ m -> do
-  return (delete id m, id)
+deleteItem (DB mvar) i = liftIO $ modifyMVar mvar $ \ m -> do
+  return (delete i m, i)

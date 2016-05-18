@@ -17,8 +17,8 @@ type CHandler = ExceptT ServantError IO
 
 getItemIds :: (BaseUrl, Manager) -> CHandler [ItemId]
 getItemIds (baseUrl, manager) =
-  let getItemIds :<|> _ = client api baseUrl manager
-  in getItemIds
+  let get :<|> _ = client api baseUrl manager
+  in get
 
 getItem :: (BaseUrl, Manager) -> ItemId -> CHandler Item
 getItem (baseUrl, manager) =
@@ -35,6 +35,7 @@ deleteItem (baseUrl, manager) =
   let _ :<|> _ :<|> _ :<|> get = client api baseUrl manager
   in get
 
+spec :: Spec
 spec = do
   describe "app" $ around withApp $ do
     context "/api/item" $ do
@@ -48,12 +49,12 @@ spec = do
 
       context "POST" $ do
         it "allows to create an item" $ \ c -> do
-          id <- try $ postItem c "foo"
-          try (getItem c id) `shouldReturn` Item id "foo"
+          i <- try $ postItem c "foo"
+          try (getItem c i) `shouldReturn` Item i "foo"
 
         it "lists created items" $ \ c -> do
-          id <- try $ postItem c "foo"
-          try (getItemIds c) `shouldReturn` [id]
+          i <- try $ postItem c "foo"
+          try (getItemIds c) `shouldReturn` [i]
 
         it "lists 2 created items" $ \ c -> do
           a <- try $ postItem c "foo"
@@ -62,8 +63,8 @@ spec = do
 
       context "DELETE" $ do
         it "allows to delete items" $ \ c -> do
-          id <- try $ postItem c "foo"
-          try $ deleteItem c id
+          i <- try $ postItem c "foo"
+          _ <- try $ deleteItem c i
           try (getItemIds c) `shouldReturn` []
 
 try :: CHandler a -> IO a
