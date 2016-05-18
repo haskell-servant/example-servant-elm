@@ -6,6 +6,7 @@ import           Api
 
 main :: IO ()
 main = do
-  putStrLn "module Api exposing (..)"
-  putStrLn defElmImports
-  putStrLn $ intercalate "\n\n" $ generateElmForAPI api
+  putStr $ intercalate "\n\n" $
+    "module Api exposing (..)" :
+    defElmImports :
+    generateElmForAPI api
