@@ -63,15 +63,19 @@ update message s = case message of
           List.map (toServer NewItem << getApiItemByItemId) itemIds
       in (s, cmd)
     NewItem item -> noop {s | items = insert item.id item s.items}
-    Delete id -> noop <| {s | items = remove id s.items}
+    Delete id -> noop {s | items = remove id s.items}
 
   FromUi fromUi -> case fromUi of
-    AddItemButton -> (\ cmd -> (s, cmd)) <|
+    AddItemButton ->
       let
         new = s.addItemInput
-      in toServer (\ id -> NewItem (Item id new)) (postApiItem new)
+        cmd = toServer (\ id -> NewItem (Item id new)) (postApiItem new)
+      in (s, cmd)
     AddItemInputChange t -> noop {s | addItemInput = t}
-    Done id -> (s, toServer (always (Delete id)) (deleteApiItemByItemId id))
+    Done id ->
+      let
+        cmd = toServer (always (Delete id)) (deleteApiItemByItemId id)
+      in (s, cmd)
 
   Error msg -> ({s | error = Just msg}, Cmd.none)
 
