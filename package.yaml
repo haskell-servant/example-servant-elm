@@ -1,0 +1,14 @@
+executables:
+  server:
+    main: Main.hs
+    source-dirs:
+      - server
+    dependencies:
+      - base
+      - warp
+      - aeson
+      - wai-make-assets
+      - servant-elm
+      - servant
+      - wai
+      - servant-server
