@@ -30,7 +30,7 @@ postItem (baseUrl, manager) =
   let _ :<|> _ :<|> get :<|> _ = client api baseUrl manager
   in get
 
-deleteItem :: (BaseUrl, Manager) -> ItemId -> CHandler ItemId
+deleteItem :: (BaseUrl, Manager) -> ItemId -> CHandler NoContent
 deleteItem (baseUrl, manager) =
   let _ :<|> _ :<|> _ :<|> get = client api baseUrl manager
   in get

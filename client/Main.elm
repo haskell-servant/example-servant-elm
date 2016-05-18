@@ -71,7 +71,7 @@ update message s = case message of
         new = s.addItemInput
       in toServer (\ id -> NewItem (Item id new)) (postApiItem new)
     AddItemInputChange t -> noop {s | addItemInput = t}
-    Done id -> (s, toServer Delete (deleteApiItemByItemId id))
+    Done id -> (s, toServer (always (Delete id)) (deleteApiItemByItemId id))
 
   Error msg -> ({s | error = Just msg}, Cmd.none)
 
@@ -90,9 +90,6 @@ view state =
     input [onInput (FromUi << AddItemInputChange)] [] ::
     button [onClick (FromUi AddItemButton)] [text "add item"] ::
     []
-
-mkUl : List (Html m) -> Html m
-mkUl list = ul [] (List.map (\ item -> li [] [item]) list)
 
 viewItem : Item -> Html Message
 viewItem item = div [] <|
