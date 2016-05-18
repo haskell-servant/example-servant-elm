@@ -70,7 +70,10 @@ update message s = case message of
       let
         new = s.addItemInput
         cmd = toServer (\ id -> NewItem (Item id new)) (postApiItem new)
-      in (s, cmd)
+        newState = {s | addItemInput = ""}
+      in if new == ""
+        then update (Error "empty field") s
+        else (newState, cmd)
     AddItemInputChange t -> noop {s | addItemInput = t}
     Done id ->
       let
