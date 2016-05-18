@@ -2,5 +2,5 @@
 	elm make Main.elm
 	mv index.html ../assets/
 
-Api.elm: GenerateElm.hs ../server/Api.hs
-	(cd ../ ; stack exec -- runhaskell -iserver client/GenerateElm.hs > client/Api.elm)
+Api.elm: GenerateElm.hs ../server/src/Api.hs
+	(cd ../ ; stack exec -- runhaskell -iserver/src client/GenerateElm.hs)

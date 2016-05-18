@@ -15,5 +15,8 @@ packages:
 
 extra-deps:
   - servant-0.5
+  - servant-client-0.5
   - servant-foreign-0.5
   - servant-server-0.5
+  - warp-3.2.6
+  - http2-1.6.0

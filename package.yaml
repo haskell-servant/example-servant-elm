@@ -1,14 +1,30 @@
+
+dependencies:
+  - base
+  - warp
+  - aeson
+  - wai-make-assets
+  - servant-elm
+  - servant
+  - wai
+  - servant-server
+  - transformers
+  - containers
+
 executables:
   server:
     main: Main.hs
     source-dirs:
-      - server
+      - server/src
+
+tests:
+  spec:
+    main: Spec.hs
+    source-dirs:
+      - server/test
+      - server/src
     dependencies:
-      - base
-      - warp
-      - aeson
-      - wai-make-assets
-      - servant-elm
-      - servant
-      - wai
-      - servant-server
+      - warp >= 3.2.3
+      - hspec
+      - servant-client
+      - http-client
