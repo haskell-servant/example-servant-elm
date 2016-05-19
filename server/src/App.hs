@@ -34,8 +34,6 @@ apiServer db =
   postItem db :<|>
   deleteItem db
 
-type Handler = ExceptT ServantErr IO
-
 listItems :: DB -> Handler [ItemId]
 listItems db = liftIO $ allItemIds db
 

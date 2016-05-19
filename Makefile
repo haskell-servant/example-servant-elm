@@ -5,7 +5,7 @@ setup: client-setup server-setup
 build: client-build server-build
 
 client-setup:
-	(cd client ; elm package install)
+	(cd client ; elm package install -y)
 
 client-build:
 	(cd client ; make)
@@ -28,5 +28,10 @@ sensei-start:
 
 fast-test:
 	seito
+	(cd client ; make run-tests)
+	(cd client ; make)
+
+slow-test:
+	stack test
 	(cd client ; make run-tests)
 	(cd client ; make)

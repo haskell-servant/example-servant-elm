@@ -13,69 +13,55 @@ import           Test.Hspec
 import           Api
 import           App (app)
 
-type CHandler = ExceptT ServantError IO
-
-getItemIds :: (BaseUrl, Manager) -> CHandler [ItemId]
-getItemIds (baseUrl, manager) =
-  let get :<|> _ = client api baseUrl manager
-  in get
-
-getItem :: (BaseUrl, Manager) -> ItemId -> CHandler Item
-getItem (baseUrl, manager) =
-  let _ :<|> get :<|> _ = client api baseUrl manager
-  in get
-
-postItem :: (BaseUrl, Manager) -> String -> CHandler ItemId
-postItem (baseUrl, manager) =
-  let _ :<|> _ :<|> get :<|> _ = client api baseUrl manager
-  in get
-
-deleteItem :: (BaseUrl, Manager) -> ItemId -> CHandler NoContent
-deleteItem (baseUrl, manager) =
-  let _ :<|> _ :<|> _ :<|> get = client api baseUrl manager
-  in get
+getItemIds :: Manager -> BaseUrl -> ClientM [ItemId]
+getItem :: ItemId -> Manager -> BaseUrl -> ClientM Item
+postItem :: String -> Manager -> BaseUrl -> ClientM ItemId
+deleteItem :: ItemId -> Manager -> BaseUrl -> ClientM NoContent
+getItemIds :<|> getItem :<|> postItem :<|> deleteItem = client api
 
 spec :: Spec
 spec = do
   describe "app" $ around withApp $ do
     context "/api/item" $ do
-      it "returns an empty list" $ \ c -> do
-        try (getItemIds c) `shouldReturn` []
+      it "returns an empty list" $ \ host -> do
+        try host getItemIds `shouldReturn` []
 
       context "/api/item/:id" $ do
-        it "returns a 404 for missing items" $ \ c -> do
-          Left err <- runExceptT (getItem c 23)
+        it "returns a 404 for missing items" $ \ (manager, baseUrl) -> do
+          Left err <- runExceptT $ getItem 23 manager baseUrl
           responseStatus err `shouldBe` notFound404
 
       context "POST" $ do
-        it "allows to create an item" $ \ c -> do
-          i <- try $ postItem c "foo"
-          try (getItem c i) `shouldReturn` Item i "foo"
+        it "allows to create an item" $ \ host -> do
+          i <- try host $ postItem "foo"
+          try host (getItem i) `shouldReturn` Item i "foo"
 
-        it "lists created items" $ \ c -> do
-          i <- try $ postItem c "foo"
-          try (getItemIds c) `shouldReturn` [i]
+        it "lists created items" $ \ host -> do
+          i <- try host $ postItem "foo"
+          try host getItemIds `shouldReturn` [i]
 
-        it "lists 2 created items" $ \ c -> do
-          a <- try $ postItem c "foo"
-          b <- try $ postItem c "bar"
-          try (getItemIds c) `shouldReturn` [a, b]
+        it "lists 2 created items" $ \ host -> do
+          a <- try host $ postItem "foo"
+          b <- try host $ postItem "bar"
+          try host getItemIds `shouldReturn` [a, b]
 
       context "DELETE" $ do
-        it "allows to delete items" $ \ c -> do
-          i <- try $ postItem c "foo"
-          _ <- try $ deleteItem c i
-          try (getItemIds c) `shouldReturn` []
+        it "allows to delete items" $ \ host -> do
+          i <- try host $ postItem "foo"
+          _ <- try host $ deleteItem i
+          try host getItemIds `shouldReturn` []
 
-try :: CHandler a -> IO a
-try action = do
-  result <- runExceptT action
+type Host = (Manager, BaseUrl)
+
+try :: Host -> (Manager -> BaseUrl -> ClientM a) -> IO a
+try (manager, baseUrl) action = do
+  result <- runExceptT $ action manager baseUrl
   case result of
     Right x -> return x
     Left err -> throwIO $ ErrorCall $ show err
 
-withApp :: ((BaseUrl, Manager) -> IO a) -> IO a
+withApp :: (Host -> IO a) -> IO a
 withApp action = testWithApplication app $ \ port -> do
   manager <- newManager defaultManagerSettings
   let url = BaseUrl Http "localhost" port ""
-  action (url, manager)
+  action (manager, url)
