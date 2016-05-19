@@ -28,4 +28,5 @@ sensei-start:
 
 fast-test:
 	seito
+	(cd client ; make run-tests)
 	(cd client ; make)

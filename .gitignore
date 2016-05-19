@@ -1,5 +1,6 @@
 client/Api.elm
 *.cabal
 client/elm-stuff/
+client/tests.js
 .stack-work/
 assets/index.html

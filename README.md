@@ -34,8 +34,6 @@ There's a `Makefile` included with the following targets:
 
 ## Caveats
 
-- The client code doesn't have a test suite. :( `elm-test` wasn't updated for
-  `elm-0.17` last I checked.
 - This project uses https://travis-ci.org/soenkehahn/wai-make-assets, which is
   experimental. E.g. there's no support for serving the assets in a
 	production setting.
