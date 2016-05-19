@@ -2,7 +2,9 @@ resolver: lts-5.16
 
 packages:
   - location: ./.
-  - location: ../../src/wai-make-assets
+  - location:
+      git: https://www.github.com/soenkehahn/wai-make-assets
+      commit: c72a924
     extra-dep: true
   - location:
       git: https://www.github.com/mattjbray/elm-export
