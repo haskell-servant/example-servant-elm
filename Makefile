@@ -20,6 +20,9 @@ server-build:
 server-start: server-build
 	stack exec server
 
+server-start-reserve:
+	stack exec -- reserve server/src/Main.hs
+
 sensei-start:
 	stack exec -- sensei-web server/test/Spec.hs
 
