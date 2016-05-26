@@ -132,18 +132,19 @@ toServer tag task =
 view : State -> Html Message
 view state =
     div []
-        <| text (toString state)
-        :: br [] []
-        :: (List.map (viewItem << snd) (toList state.items))
-        ++ input [ onInput (FromUi << AddItemInputChange) ] []
-        :: button [ onClick (FromUi AddItemButton) ] [ text "add item" ]
-        :: []
+        <| [ text (toString state)
+           , br [] []
+           ]
+        ++ (List.map (viewItem << snd) (toList state.items))
+        ++ [ input [ onInput (FromUi << AddItemInputChange) ] []
+           , button [ onClick (FromUi AddItemButton) ] [ text "add item" ]
+           ]
 
 
 viewItem : Item -> Html Message
 viewItem item =
     div []
-        <| text (item.text)
-        :: text " - "
-        :: button [ onClick (FromUi <| Done item.id) ] [ text "done" ]
-        :: []
+        <| [ text (item.text)
+           , text " - "
+           , button [ onClick (FromUi <| Done item.id) ] [ text "done" ]
+           ]

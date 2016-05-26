@@ -12,8 +12,7 @@ main =
 tests : Test
 tests =
     suite "client test suite"
-        <| addItemButton
-        :: []
+        <| [ addItemButton ]
 
 
 addItemButton : Test
