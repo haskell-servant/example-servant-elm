@@ -21,6 +21,10 @@ main =
         }
 
 
+
+-- MODEL
+
+
 type alias State =
     { items : Dict Int Item
     , addItemInput : String
@@ -30,6 +34,22 @@ type alias State =
 
 type alias ItemId =
     Int
+
+
+init : ( State, Cmd Message )
+init =
+    let
+        fetch =
+            toServer Initial Api.getApiItem
+
+        state =
+            { items = empty, addItemInput = "", error = Nothing }
+    in
+        ( state, fetch )
+
+
+
+-- UPDATE
 
 
 type Message
@@ -48,18 +68,6 @@ type FromUi
     = AddItemInputChange String
     | AddItemButton
     | Done ItemId
-
-
-init : ( State, Cmd Message )
-init =
-    let
-        fetch =
-            toServer Initial Api.getApiItem
-
-        state =
-            { items = empty, addItemInput = "", error = Nothing }
-    in
-        ( state, fetch )
 
 
 update : Message -> State -> ( State, Cmd Message )
@@ -122,6 +130,10 @@ noop s =
 toServer : (a -> FromServer) -> Task Http.Error a -> Cmd Message
 toServer tag task =
     perform (Error << toString) (FromServer << tag) task
+
+
+
+-- VIEW
 
 
 view : State -> Html Message
