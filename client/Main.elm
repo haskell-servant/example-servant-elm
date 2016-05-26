@@ -85,10 +85,10 @@ update message s =
                         ( s, cmd )
 
                 NewItem item ->
-                    noop { s | items = insert item.id item s.items }
+                    { s | items = insert item.id item s.items } ! []
 
                 Delete id ->
-                    noop { s | items = remove id s.items }
+                    { s | items = remove id s.items } ! []
 
         FromUi fromUi ->
             case fromUi of
@@ -109,7 +109,7 @@ update message s =
                             ( newState, cmd )
 
                 AddItemInputChange t ->
-                    noop { s | addItemInput = t }
+                    { s | addItemInput = t } ! []
 
                 Done id ->
                     let
@@ -121,10 +121,6 @@ update message s =
         Error msg ->
             ( { s | error = Just msg }, Cmd.none )
 
-
-noop : s -> ( s, Cmd m )
-noop s =
-    ( s, Cmd.none )
 
 
 toServer : (a -> FromServer) -> Task Http.Error a -> Cmd Msg
