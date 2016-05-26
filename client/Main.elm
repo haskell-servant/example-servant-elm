@@ -21,11 +21,6 @@ main =
         }
 
 
-type Either left right
-    = Left left
-    | Right right
-
-
 type alias State =
     { items : Dict Int Item
     , addItemInput : String
