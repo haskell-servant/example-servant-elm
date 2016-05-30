@@ -1,0 +1,57 @@
+-- This file has been generated from package.yaml by hpack version 0.14.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           example-servant-elm
+version:        0.0.0
+build-type:     Simple
+cabal-version:  >= 1.10
+
+executable server
+  main-is: Main.hs
+  hs-source-dirs:
+      server/src
+  build-depends:
+      base
+    , warp
+    , aeson
+    , wai-make-assets
+    , servant-elm
+    , servant
+    , wai
+    , servant-server
+    , transformers
+    , containers
+  other-modules:
+      Api
+      App
+  default-language: Haskell2010
+
+test-suite spec
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  hs-source-dirs:
+      server/test
+    , server/src
+  build-depends:
+      base
+    , warp
+    , aeson
+    , wai-make-assets
+    , servant-elm
+    , servant
+    , wai
+    , servant-server
+    , transformers
+    , containers
+    , warp >= 3.2.3
+    , hspec
+    , servant-client
+    , http-client
+    , http-types
+  other-modules:
+      AppSpec
+      Api
+      App
+      Main
+  default-language: Haskell2010
