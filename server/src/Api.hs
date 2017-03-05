@@ -1,7 +1,7 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE TypeOperators              #-}
 
 module Api where
 
@@ -23,11 +23,11 @@ api = Proxy
 
 -- types
 
-type ItemId = Integer
+type ItemId = Int
 
 data Item
   = Item {
-    id :: ItemId,
+    id   :: ItemId,
     text :: String
   }
   deriving (Show, Eq, Generic)

@@ -3,7 +3,6 @@ module Main exposing (..)
 import Debug exposing (..)
 import Dict exposing (..)
 import Html exposing (..)
-import Html.App exposing (program)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
@@ -79,8 +78,8 @@ update message s =
                     let
                         cmd : Cmd Msg
                         cmd =
-                            Cmd.batch
-                                <| List.map (toServer NewItem << getApiItemByItemId) itemIds
+                            Cmd.batch <|
+                                List.map (toServer NewItem << getApiItemByItemId) itemIds
                     in
                         ( s, cmd )
 
@@ -122,7 +121,6 @@ update message s =
             ( { s | error = Just msg }, Cmd.none )
 
 
-
 toServer : (a -> FromServer) -> Task Http.Error a -> Cmd Msg
 toServer tag task =
     perform (Error << toString) (FromServer << tag) task
@@ -134,20 +132,20 @@ toServer tag task =
 
 view : Model -> Html Msg
 view state =
-    div []
-        <| [ text (toString state)
-           , br [] []
-           ]
-        ++ (List.map (viewItem << snd) (toList state.items))
-        ++ [ input [ onInput (FromUi << AddItemInputChange) ] []
-           , button [ onClick (FromUi AddItemButton) ] [ text "add item" ]
-           ]
+    div [] <|
+        [ text (toString state)
+        , br [] []
+        ]
+            ++ (List.map (viewItem << snd) (toList state.items))
+            ++ [ input [ onInput (FromUi << AddItemInputChange) ] []
+               , button [ onClick (FromUi AddItemButton) ] [ text "add item" ]
+               ]
 
 
 viewItem : Item -> Html Msg
 viewItem item =
-    div []
-        <| [ text (item.text)
-           , text " - "
-           , button [ onClick (FromUi <| Done item.id) ] [ text "done" ]
-           ]
+    div [] <|
+        [ text (item.text)
+        , text " - "
+        , button [ onClick (FromUi <| Done item.id) ] [ text "done" ]
+        ]
