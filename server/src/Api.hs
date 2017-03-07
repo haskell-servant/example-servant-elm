@@ -8,7 +8,6 @@ module Api where
 
 import           Data.Aeson
 import           Data.Proxy
-import           Elm          (ElmType)
 import           GHC.Generics
 import           Servant.API
 import           Servant.Elm

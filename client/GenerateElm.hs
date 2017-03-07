@@ -10,20 +10,6 @@ import           Servant.Elm
 
 import           Api
 
-elmOpts :: ElmOptions
-elmOpts = ElmOptions
-  { urlPrefix = Static "http://localhost:8000"
-  , elmExportOptions = Elm.defaultOptions
-  , emptyResponseElmTypes =
-      [ Elm.toElmType NoContent
-      , Elm.toElmType ()
-      ]
-  , stringElmTypes =
-      [ Elm.toElmType ("" :: String)
-      , Elm.toElmType ("" :: Text.Text)
-      ]
-  }
-
 spec :: Spec
 spec =
   Spec ["Api"]
@@ -32,7 +18,7 @@ spec =
     : toElmEncoderSource            (Proxy :: Proxy Item)
     : toElmTypeSource               (Proxy :: Proxy Item)
     : toElmTypeSource               (Proxy :: Proxy NoContent)
-    : generateElmForAPIWith elmOpts (Proxy :: Proxy Api)
+    : generateElmForAPI             (Proxy :: Proxy Api)
     )
 
 main :: IO ()
