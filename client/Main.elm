@@ -1,12 +1,10 @@
 module Main exposing (..)
 
-import Debug exposing (..)
 import Dict exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
-import Task exposing (Task, perform)
 import Api exposing (..)
 
 
@@ -53,21 +51,13 @@ init =
 
 type Msg
     = Init (Result Http.Error (List Int))
-    | NewItem (Result Http.Error Item)
+    | CreateNewItem (Result Http.Error Int)
+    | GotNewItem (Result Http.Error Item)
+    | DeleteItem (Result Http.Error NoContent)
+    | AddItemInputChange String
+    | AddItemButton
+    | Done ItemId
     | Error String
-
-
-
--- type FromServer
---     = Initial (List ItemId)
---     | NewItem Item
---     | Delete ItemId
---
---
--- type FromUi
---     = AddItemInputChange String
---     | AddItemButton
---     | Done ItemId
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -79,15 +69,43 @@ update message model =
         Init (Err err) ->
             ( { model | error = handleHttpError err }, Cmd.none )
 
-        NewItem (Ok item) ->
+        CreateNewItem (Ok itemId) ->
+            (model ! getAllItems [ itemId ])
+
+        CreateNewItem (Err err) ->
+            ( { model | error = handleHttpError err }, Cmd.none )
+
+        GotNewItem (Ok item) ->
             let
                 items_ =
                     insert item.id item model.items
             in
                 ( { model | items = items_ }, Cmd.none )
 
-        NewItem (Err err) ->
+        GotNewItem (Err err) ->
             ( { model | error = handleHttpError err }, Cmd.none )
+
+        DeleteItem (Ok _) ->
+            ( model, Cmd.none )
+
+        DeleteItem (Err err) ->
+            ( { model | error = handleHttpError err }, Cmd.none )
+
+        AddItemButton ->
+            if (model.addItemInput /= "") then
+                ( { model | addItemInput = "" }, Http.send CreateNewItem <| postApiItem model.addItemInput )
+            else
+                ( model, Cmd.none )
+
+        AddItemInputChange addItemInput ->
+            ( { model | addItemInput = addItemInput }, Cmd.none )
+
+        Done itemId ->
+            let
+                items =
+                    (Dict.remove itemId model.items)
+            in
+                ( { model | items = items }, Http.send DeleteItem <| deleteApiItemByItemId itemId )
 
         Error msg ->
             ( { model | error = Just msg }, Cmd.none )
@@ -97,7 +115,7 @@ getAllItems : List Int -> List (Cmd Msg)
 getAllItems itemIds =
     List.map
         (\itemId ->
-            Http.send NewItem <| Api.getApiItemByItemId itemId
+            Http.send GotNewItem <| Api.getApiItemByItemId itemId
         )
         itemIds
 
@@ -122,31 +140,22 @@ handleHttpError err =
 
 
 
--- toServer : (a -> FromServer) -> Task Http.Error a -> Cmd Msg
--- toServer tag task =
---     perform (Error << toString) (FromServer << tag) task
 -- VIEW
 
 
 view : Model -> Html Msg
 view state =
     div [] <|
-        [ text (toString state)
-        , br [] []
+        [ input [ onInput (AddItemInputChange), value state.addItemInput ] []
+        , button [ onClick AddItemButton ] [ text "add item" ]
         ]
+            ++ (List.map viewItem (toList state.items))
 
 
-
--- ++ (List.map viewItem (toList state.items))
--- ++ [ input [ onInput (FromUi << AddItemInputChange) ] []
---    , button [ onClick (FromUi AddItemButton) ] [ text "add item" ]
---    ]
-
-
-viewItem : Int -> Item -> Html Msg
-viewItem index item =
+viewItem : ( Int, Item ) -> Html Msg
+viewItem ( index, item ) =
     div [] <|
         [ text (item.text)
         , text " - "
-          -- , button [ onClick (FromUi <| Done item.id) ] [ text "done" ]
+        , button [ onClick <| Done item.id ] [ text "done" ]
         ]
