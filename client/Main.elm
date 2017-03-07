@@ -1,17 +1,14 @@
 module Main exposing (..)
 
-import Debug exposing (..)
 import Dict exposing (..)
 import Html exposing (..)
-import Html.App exposing (program)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
-import Task exposing (Task, perform)
 import Api exposing (..)
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
     program
         { init = init
@@ -40,7 +37,7 @@ init : ( Model, Cmd Msg )
 init =
     let
         fetch =
-            toServer Initial Api.getApiItem
+            Http.send Init <| Api.getApiItem
 
         state =
             { items = empty, addItemInput = "", error = Nothing }
@@ -53,79 +50,93 @@ init =
 
 
 type Msg
-    = FromServer FromServer
-    | FromUi FromUi
+    = Init (Result Http.Error (List Int))
+    | CreateNewItem (Result Http.Error Int)
+    | GotNewItem (Result Http.Error Item)
+    | DeleteItem (Result Http.Error NoContent)
+    | AddItemInputChange String
+    | AddItemButton
+    | Done ItemId
     | Error String
 
 
-type FromServer
-    = Initial (List ItemId)
-    | NewItem Item
-    | Delete ItemId
-
-
-type FromUi
-    = AddItemInputChange String
-    | AddItemButton
-    | Done ItemId
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
-update message s =
+update message model =
     case message of
-        FromServer fromServer ->
-            case fromServer of
-                Initial itemIds ->
-                    let
-                        cmd : Cmd Msg
-                        cmd =
-                            Cmd.batch
-                                <| List.map (toServer NewItem << getApiItemByItemId) itemIds
-                    in
-                        ( s, cmd )
+        Init (Ok itemIds) ->
+            (model ! getAllItems itemIds)
 
-                NewItem item ->
-                    { s | items = insert item.id item s.items } ! []
+        Init (Err err) ->
+            ( { model | error = handleHttpError err }, Cmd.none )
 
-                Delete id ->
-                    { s | items = remove id s.items } ! []
+        CreateNewItem (Ok itemId) ->
+            (model ! getAllItems [ itemId ])
 
-        FromUi fromUi ->
-            case fromUi of
-                AddItemButton ->
-                    let
-                        new =
-                            s.addItemInput
+        CreateNewItem (Err err) ->
+            ( { model | error = handleHttpError err }, Cmd.none )
 
-                        cmd =
-                            toServer (\id -> NewItem (Item id new)) (postApiItem new)
+        GotNewItem (Ok item) ->
+            let
+                items_ =
+                    insert item.id item model.items
+            in
+                ( { model | items = items_ }, Cmd.none )
 
-                        newState =
-                            { s | addItemInput = "" }
-                    in
-                        if new == "" then
-                            update (Error "empty field") s
-                        else
-                            ( newState, cmd )
+        GotNewItem (Err err) ->
+            ( { model | error = handleHttpError err }, Cmd.none )
 
-                AddItemInputChange t ->
-                    { s | addItemInput = t } ! []
+        DeleteItem (Ok _) ->
+            ( model, Cmd.none )
 
-                Done id ->
-                    let
-                        cmd =
-                            toServer (always (Delete id)) (deleteApiItemByItemId id)
-                    in
-                        ( s, cmd )
+        DeleteItem (Err err) ->
+            ( { model | error = handleHttpError err }, Cmd.none )
+
+        AddItemButton ->
+            if (model.addItemInput /= "") then
+                ( { model | addItemInput = "" }, Http.send CreateNewItem <| postApiItem model.addItemInput )
+            else
+                ( model, Cmd.none )
+
+        AddItemInputChange addItemInput ->
+            ( { model | addItemInput = addItemInput }, Cmd.none )
+
+        Done itemId ->
+            let
+                items =
+                    (Dict.remove itemId model.items)
+            in
+                ( { model | items = items }, Http.send DeleteItem <| deleteApiItemByItemId itemId )
 
         Error msg ->
-            ( { s | error = Just msg }, Cmd.none )
+            ( { model | error = Just msg }, Cmd.none )
 
 
+getAllItems : List Int -> List (Cmd Msg)
+getAllItems itemIds =
+    List.map
+        (\itemId ->
+            Http.send GotNewItem <| Api.getApiItemByItemId itemId
+        )
+        itemIds
 
-toServer : (a -> FromServer) -> Task Http.Error a -> Cmd Msg
-toServer tag task =
-    perform (Error << toString) (FromServer << tag) task
+
+handleHttpError : Http.Error -> Maybe String
+handleHttpError err =
+    case err of
+        Http.BadUrl message ->
+            Just message
+
+        Http.Timeout ->
+            Just "A timeout happened"
+
+        Http.NetworkError ->
+            Just "A NetworkError occurred"
+
+        Http.BadStatus status ->
+            Just status.status.message
+
+        Http.BadPayload msg _ ->
+            Just msg
 
 
 
@@ -134,20 +145,17 @@ toServer tag task =
 
 view : Model -> Html Msg
 view state =
-    div []
-        <| [ text (toString state)
-           , br [] []
-           ]
-        ++ (List.map (viewItem << snd) (toList state.items))
-        ++ [ input [ onInput (FromUi << AddItemInputChange) ] []
-           , button [ onClick (FromUi AddItemButton) ] [ text "add item" ]
-           ]
+    div [] <|
+        [ input [ onInput (AddItemInputChange), value state.addItemInput ] []
+        , button [ onClick AddItemButton ] [ text "add item" ]
+        ]
+            ++ (List.map viewItem (toList state.items))
 
 
-viewItem : Item -> Html Msg
-viewItem item =
-    div []
-        <| [ text (item.text)
-           , text " - "
-           , button [ onClick (FromUi <| Done item.id) ] [ text "done" ]
-           ]
+viewItem : ( Int, Item ) -> Html Msg
+viewItem ( index, item ) =
+    div [] <|
+        [ text (item.text)
+        , text " - "
+        , button [ onClick <| Done item.id ] [ text "done" ]
+        ]
