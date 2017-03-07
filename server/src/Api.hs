@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE DeriveAnyClass             #-}
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE TypeOperators              #-}
@@ -7,6 +8,7 @@ module Api where
 
 import           Data.Aeson
 import           Data.Proxy
+import           Elm          (ElmType)
 import           GHC.Generics
 import           Servant.API
 import           Servant.Elm
@@ -29,9 +31,4 @@ data Item
   = Item {
     id   :: ItemId,
     text :: String
-  }
-  deriving (Show, Eq, Generic)
-
-instance ElmType Item
-instance ToJSON Item
-instance FromJSON Item
+  } deriving (Show, Eq, Generic, ElmType, ToJSON, FromJSON)

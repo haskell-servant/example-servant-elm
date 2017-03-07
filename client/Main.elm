@@ -10,7 +10,7 @@ import Task exposing (Task, perform)
 import Api exposing (..)
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
     program
         { init = init
@@ -136,14 +136,14 @@ view state =
         [ text (toString state)
         , br [] []
         ]
-            ++ (List.map (viewItem << snd) (toList state.items))
+            ++ (List.map viewItem (toList state.items))
             ++ [ input [ onInput (FromUi << AddItemInputChange) ] []
                , button [ onClick (FromUi AddItemButton) ] [ text "add item" ]
                ]
 
 
-viewItem : Item -> Html Msg
-viewItem item =
+viewItem : Int -> Item -> Html Msg
+viewItem index item =
     div [] <|
         [ text (item.text)
         , text " - "
