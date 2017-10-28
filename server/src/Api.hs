@@ -9,21 +9,21 @@ import           Data.Aeson
 import           Data.Proxy
 import           GHC.Generics
 import           Servant.API
-import           Servant.Elm
+import           Servant.Elm      (ElmType)
 
 type Api =
   "api" :>
     ("item" :> Get '[JSON] [ItemId] :<|>
      "item" :> Capture "itemId" ItemId :> Get '[JSON] Item :<|>
      "item" :> ReqBody '[JSON] String :> Post '[JSON] ItemId :<|>
-     "item" :> Capture "itemId" ItemId :> Delete '[JSON] NoContent)
+     "item" :> Capture "itemId" ItemId :> Delete '[JSON] ItemId)
 
 api :: Proxy Api
 api = Proxy
 
 -- types
 
-type ItemId = Integer
+type ItemId = Int
 
 data Item
   = Item {

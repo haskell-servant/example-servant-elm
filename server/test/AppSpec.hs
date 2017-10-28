@@ -16,7 +16,7 @@ import           App (app)
 getItemIds :: Manager -> BaseUrl -> ClientM [ItemId]
 getItem :: ItemId -> Manager -> BaseUrl -> ClientM Item
 postItem :: String -> Manager -> BaseUrl -> ClientM ItemId
-deleteItem :: ItemId -> Manager -> BaseUrl -> ClientM NoContent
+deleteItem :: ItemId -> Manager -> BaseUrl -> ClientM ItemId
 getItemIds :<|> getItem :<|> postItem :<|> deleteItem = client api
 
 spec :: Spec

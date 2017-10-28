@@ -1,17 +1,14 @@
 module Main exposing (..)
 
-import Debug exposing (..)
 import Dict exposing (..)
 import Html exposing (..)
-import Html.App exposing (program)
-import Html.Attributes exposing (..)
+import Html exposing (program)
 import Html.Events exposing (..)
 import Http
-import Task exposing (Task, perform)
 import Api exposing (..)
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
     program
         { init = init
@@ -40,7 +37,7 @@ init : ( Model, Cmd Msg )
 init =
     let
         fetch =
-            toServer Initial Api.getApiItem
+            Http.send (FromServer << Initial) Api.getApiItem
 
         state =
             { items = empty, addItemInput = "", error = Nothing }
@@ -59,9 +56,10 @@ type Msg
 
 
 type FromServer
-    = Initial (List ItemId)
-    | NewItem Item
-    | Delete ItemId
+    = Initial (Result Http.Error (List ItemId))
+    | NewItem (Result Http.Error Item)
+    | CreatedItem (Result Http.Error ItemId)
+    | Delete (Result Http.Error ItemId)
 
 
 type FromUi
@@ -75,20 +73,45 @@ update message s =
     case message of
         FromServer fromServer ->
             case fromServer of
-                Initial itemIds ->
-                    let
-                        cmd : Cmd Msg
-                        cmd =
-                            Cmd.batch
-                                <| List.map (toServer NewItem << getApiItemByItemId) itemIds
-                    in
-                        ( s, cmd )
+                Initial result ->
+                    case result of
+                        Ok itemIds ->
+                            let
+                                cmd : Cmd Msg
+                                cmd =
+                                    itemIds
+                                        |> List.map getApiItemByItemId
+                                        |> List.map (Http.send (FromServer << NewItem))
+                                        |> Cmd.batch
+                            in
+                                ( s, cmd )
 
-                NewItem item ->
-                    { s | items = insert item.id item s.items } ! []
+                        Err error ->
+                            update (Error <| toString error) s
 
-                Delete id ->
-                    { s | items = remove id s.items } ! []
+                NewItem result ->
+                    case result of
+                        Ok item ->
+                            { s | items = insert item.id item s.items } ! []
+
+                        Err error ->
+                            update (Error <| toString error) s
+
+                CreatedItem result ->
+                    case result of
+                        Ok itemId ->
+                            s ! [ Http.send (FromServer << NewItem) (getApiItemByItemId itemId) ]
+
+                        Err error ->
+                            update (Error <| toString error) s
+
+                Delete result ->
+                    case result of
+                        Ok id ->
+                            { s | items = remove id s.items } ! []
+
+                        Err error ->
+                            update (Error <| toString error) s
 
         FromUi fromUi ->
             case fromUi of
@@ -98,7 +121,7 @@ update message s =
                             s.addItemInput
 
                         cmd =
-                            toServer (\id -> NewItem (Item id new)) (postApiItem new)
+                            Http.send (FromServer << CreatedItem) (postApiItem new)
 
                         newState =
                             { s | addItemInput = "" }
@@ -114,7 +137,7 @@ update message s =
                 Done id ->
                     let
                         cmd =
-                            toServer (always (Delete id)) (deleteApiItemByItemId id)
+                            Http.send (FromServer << Delete) (deleteApiItemByItemId id)
                     in
                         ( s, cmd )
 
@@ -123,31 +146,25 @@ update message s =
 
 
 
-toServer : (a -> FromServer) -> Task Http.Error a -> Cmd Msg
-toServer tag task =
-    perform (Error << toString) (FromServer << tag) task
-
-
-
 -- VIEW
 
 
 view : Model -> Html Msg
 view state =
-    div []
-        <| [ text (toString state)
-           , br [] []
-           ]
-        ++ (List.map (viewItem << snd) (toList state.items))
-        ++ [ input [ onInput (FromUi << AddItemInputChange) ] []
-           , button [ onClick (FromUi AddItemButton) ] [ text "add item" ]
-           ]
+    div [] <|
+        [ text (toString state)
+        , br [] []
+        ]
+            ++ List.map (viewItem << Tuple.second) (toList state.items)
+            ++ [ input [ onInput (FromUi << AddItemInputChange) ] []
+               , button [ onClick (FromUi AddItemButton) ] [ text "add item" ]
+               ]
 
 
 viewItem : Item -> Html Msg
 viewItem item =
-    div []
-        <| [ text (item.text)
-           , text " - "
-           , button [ onClick (FromUi <| Done item.id) ] [ text "done" ]
-           ]
+    div [] <|
+        [ text item.text
+        , text " - "
+        , button [ onClick (FromUi <| Done item.id) ] [ text "done" ]
+        ]
