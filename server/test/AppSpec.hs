@@ -13,10 +13,10 @@ import           Test.Hspec
 import           Api
 import           App (app)
 
-getItemIds :: Manager -> BaseUrl -> ClientM [ItemId]
-getItem :: ItemId -> Manager -> BaseUrl -> ClientM Item
-postItem :: String -> Manager -> BaseUrl -> ClientM ItemId
-deleteItem :: ItemId -> Manager -> BaseUrl -> ClientM ItemId
+getItemIds :: ClientM [ItemId]
+getItem :: ItemId -> ClientM Item
+postItem :: String -> ClientM ItemId
+deleteItem :: ItemId -> ClientM ItemId
 getItemIds :<|> getItem :<|> postItem :<|> deleteItem = client api
 
 spec :: Spec
@@ -28,7 +28,7 @@ spec = do
 
       context "/api/item/:id" $ do
         it "returns a 404 for missing items" $ \ (manager, baseUrl) -> do
-          Left err <- runExceptT $ getItem 23 manager baseUrl
+          Left err <- runClientM (getItem 23) (ClientEnv manager baseUrl)
           responseStatus err `shouldBe` notFound404
 
       context "POST" $ do
@@ -53,9 +53,9 @@ spec = do
 
 type Host = (Manager, BaseUrl)
 
-try :: Host -> (Manager -> BaseUrl -> ClientM a) -> IO a
+try :: Host -> ClientM a -> IO a
 try (manager, baseUrl) action = do
-  result <- runExceptT $ action manager baseUrl
+  result <- runClientM action (ClientEnv manager baseUrl)
   case result of
     Right x -> return x
     Left err -> throwIO $ ErrorCall $ show err
