@@ -13,7 +13,7 @@ This example project illustrates how to set up a project that:
 There's a `Makefile` included with the following targets:
 
 - `setup` -- Set up everything: install ghc and dependencies. (Needs `stack` and
-  `elm`.)
+  `elm`. Tests need `elm-test`.)
 - `build` -- Build the server and the client.
 - `server-start` -- Start the server here: http://localhost:3000/. Requests sent
   to this server will trigger a recompilation of the client code (not the server
