@@ -1,3 +1,5 @@
+# Haskell Servant and Elm Example
+
 This example project illustrates how to set up a project that:
 
 - Uses haskell and `servant` as a backend exposing a JSON api
@@ -12,14 +14,14 @@ This example project illustrates how to set up a project that:
 
 There's a `Makefile` included with the following targets:
 
-- `setup` -- Set up everything: install ghc and dependencies. (Needs `stack` and
-  `elm`. Tests need `elm-test`.)
+- `setup` -- Set up everything: install ghc and dependencies. (Needs `stack`, `elm`
+  and `elm-test`.)
 - `build` -- Build the server and the client.
-- `server-start` -- Start the server here: http://localhost:3000/. Requests sent
+- `server-start` -- Start the server here: <http://localhost:3000/>. Requests sent
   to this server will trigger a recompilation of the client code (not the server
   code).
 - `server-start-reserve` -- Start [reserve](https://github.com/sol/reserve) to
-	serve the app on http://localhost:12000/. In this setting, both changes to
+  serve the app on <http://localhost:12000/>. In this setting, both changes to
   the client and server code will be automatically triggered by http requests.
   This is the ideal mode for running the app during compilation, however it has
   some caveats:
@@ -34,6 +36,5 @@ There's a `Makefile` included with the following targets:
 
 ## Caveats
 
-- This project uses https://travis-ci.org/soenkehahn/wai-make-assets, which is
-  experimental. E.g. there's no support for serving the assets in a
-	production setting.
+- This project uses <https://travis-ci.org/soenkehahn/wai-make-assets>, which is
+  experimental. E.g. there's no support for serving the assets in a production setting.
