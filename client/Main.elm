@@ -37,7 +37,7 @@ init : ( Model, Cmd Msg )
 init =
     let
         fetch =
-            Http.send (FromServer << Initial) Api.getApiItem
+            Http.send (fromServer Initial) Api.getApiItem
 
         state =
             { items = empty, addItemInput = "", error = Nothing }
@@ -56,10 +56,10 @@ type Msg
 
 
 type FromServer
-    = Initial (Result Http.Error (List ItemId))
-    | NewItem (Result Http.Error Item)
-    | CreatedItem (Result Http.Error ItemId)
-    | Delete (Result Http.Error ItemId)
+    = Initial (List ItemId)
+    | NewItem Item
+    | CreatedItem ItemId
+    | Delete ItemId
 
 
 type FromUi
@@ -71,47 +71,24 @@ type FromUi
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message s =
     case message of
-        FromServer fromServer ->
-            case fromServer of
-                Initial result ->
-                    case result of
-                        Ok itemIds ->
-                            let
-                                cmd : Cmd Msg
-                                cmd =
-                                    itemIds
-                                        |> List.map getApiItemByItemId
-                                        |> List.map (Http.send (FromServer << NewItem))
-                                        |> Cmd.batch
-                            in
-                                ( s, cmd )
+        FromServer fromServerMsg ->
+            case fromServerMsg of
+                Initial itemIds ->
+                    ( s
+                    , itemIds
+                        |> List.map getApiItemByItemId
+                        |> List.map (Http.send (fromServer NewItem))
+                        |> Cmd.batch
+                    )
 
-                        Err error ->
-                            update (Error <| toString error) s
+                NewItem item ->
+                    { s | items = insert item.id item s.items } ! []
 
-                NewItem result ->
-                    case result of
-                        Ok item ->
-                            { s | items = insert item.id item s.items } ! []
+                CreatedItem itemId ->
+                    s ! [ Http.send (fromServer NewItem) (getApiItemByItemId itemId) ]
 
-                        Err error ->
-                            update (Error <| toString error) s
-
-                CreatedItem result ->
-                    case result of
-                        Ok itemId ->
-                            s ! [ Http.send (FromServer << NewItem) (getApiItemByItemId itemId) ]
-
-                        Err error ->
-                            update (Error <| toString error) s
-
-                Delete result ->
-                    case result of
-                        Ok id ->
-                            { s | items = remove id s.items } ! []
-
-                        Err error ->
-                            update (Error <| toString error) s
+                Delete id ->
+                    { s | items = remove id s.items } ! []
 
         FromUi fromUi ->
             case fromUi of
@@ -121,7 +98,7 @@ update message s =
                             s.addItemInput
 
                         cmd =
-                            Http.send (FromServer << CreatedItem) (postApiItem new)
+                            Http.send (fromServer CreatedItem) (postApiItem new)
 
                         newState =
                             { s | addItemInput = "" }
@@ -135,14 +112,20 @@ update message s =
                     { s | addItemInput = t } ! []
 
                 Done id ->
-                    let
-                        cmd =
-                            Http.send (FromServer << Delete) (deleteApiItemByItemId id)
-                    in
-                        ( s, cmd )
+                    ( s, Http.send (fromServer Delete) (deleteApiItemByItemId id) )
 
         Error msg ->
             ( { s | error = Just msg }, Cmd.none )
+
+
+fromServer : (a -> FromServer) -> Result Http.Error a -> Msg
+fromServer msgConstructor result =
+    case result of
+        Ok content ->
+            FromServer <| msgConstructor content
+
+        Err error ->
+            Error <| toString error
 
 
 
