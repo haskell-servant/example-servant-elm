@@ -58,7 +58,6 @@ type Msg
 type FromServer
     = Initial (List ItemId)
     | NewItem Item
-    | CreatedItem ItemId
     | Delete ItemId
 
 
@@ -84,9 +83,6 @@ update message s =
                 NewItem item ->
                     { s | items = insert item.id item s.items } ! []
 
-                CreatedItem itemId ->
-                    s ! [ Http.send (fromServer NewItem) (getApiItemByItemId itemId) ]
-
                 Delete id ->
                     { s | items = remove id s.items } ! []
 
@@ -98,7 +94,7 @@ update message s =
                             s.addItemInput
 
                         cmd =
-                            Http.send (fromServer CreatedItem) (postApiItem new)
+                            Http.send (fromServer (\id -> NewItem (Item id new))) (postApiItem new)
 
                         newState =
                             { s | addItemInput = "" }
