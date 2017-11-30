@@ -11,8 +11,8 @@ main :: IO ()
 main = do
   let code = "module Api exposing (..)" :
             defElmImports :
+            "type NoContent = NoContent" :
             toElmTypeSource (Proxy :: Proxy Item) :
             toElmDecoderSource (Proxy :: Proxy Item) :
             generateElmForAPI api
-  writeFile "client/Api.elm" $ intercalate "\n\n" $ map unpack code  
-
+  writeFile "client/Api.elm" $ intercalate "\n\n" $ map unpack code

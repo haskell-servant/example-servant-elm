@@ -108,7 +108,7 @@ update message s =
                     { s | addItemInput = t } ! []
 
                 Done id ->
-                    ( s, Http.send (fromServer Delete) (deleteApiItemByItemId id) )
+                    ( s, Http.send (fromServer (\NoContent -> Delete id)) (deleteApiItemByItemId id) )
 
         Error msg ->
             ( { s | error = Just msg }, Cmd.none )

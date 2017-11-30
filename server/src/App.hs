@@ -69,6 +69,7 @@ allItemIds :: DB -> IO [ItemId]
 allItemIds (DB mvar) =
   keys <$> readMVar mvar
 
-deleteItem :: MonadIO m => DB -> ItemId -> m ItemId
-deleteItem (DB mvar) i = liftIO $ modifyMVar mvar $ \ m -> do
-  return (delete i m, i)
+deleteItem :: MonadIO m => DB -> ItemId -> m NoContent
+deleteItem (DB mvar) i = liftIO $ do
+  modifyMVar_ mvar $ \ m -> return (delete i m)
+  return NoContent
