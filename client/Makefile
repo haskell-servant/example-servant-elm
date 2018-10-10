@@ -1,5 +1,5 @@
 ../assets/index.html: Api.elm Main.elm
-	elm make --yes Main.elm
+	elm make Main.elm
 	mv index.html ../assets/
 
 Api.elm: GenerateElm.hs ../server/src/Api.hs

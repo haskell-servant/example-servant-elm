@@ -1,8 +1,8 @@
-module Tests exposing (..)
+module Tests exposing (addItemButton, tests)
 
-import Test exposing (..)
-import Main exposing (..)
 import Expect
+import Main exposing (..)
+import Test exposing (..)
 
 
 tests : Test
@@ -27,4 +27,4 @@ addItemButton =
                 result =
                     new.addItemInput
             in
-                Expect.equal "" result
+            Expect.equal "" result

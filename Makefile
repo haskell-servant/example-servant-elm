@@ -5,7 +5,6 @@ setup: client-setup server-setup
 build: client-build server-build
 
 client-setup:
-	(cd client ; elm package install -y)
 
 client-build:
 	(cd client ; make)
