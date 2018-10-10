@@ -1,17 +1,18 @@
-module Main exposing (..)
+module Main exposing (FromServer(..), FromUi(..), ItemId, Model, Msg(..), fromServer, init, main, update, view, viewItem)
 
+import Browser
+import Api exposing (..)
 import Dict exposing (..)
 import Html exposing (..)
-import Html exposing (program)
 import Html.Events exposing (..)
 import Http
-import Api exposing (..)
+import Debug
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    program
-        { init = init
+    Browser.element
+        { init = \() -> init
         , update = update
         , subscriptions = \_ -> Sub.none
         , view = view
@@ -42,7 +43,7 @@ init =
         state =
             { items = empty, addItemInput = "", error = Nothing }
     in
-        ( state, fetch )
+    ( state, fetch )
 
 
 
@@ -81,10 +82,14 @@ update message s =
                     )
 
                 NewItem item ->
-                    { s | items = insert item.id item s.items } ! []
+                    ( { s | items = insert item.id item s.items }
+                    , Cmd.none
+                    )
 
                 Delete id ->
-                    { s | items = remove id s.items } ! []
+                    ( { s | items = remove id s.items }
+                    , Cmd.none
+                    )
 
         FromUi fromUi ->
             case fromUi of
@@ -99,13 +104,16 @@ update message s =
                         newState =
                             { s | addItemInput = "" }
                     in
-                        if new == "" then
-                            update (Error "empty field") s
-                        else
-                            ( newState, cmd )
+                    if new == "" then
+                        update (Error "empty field") s
+
+                    else
+                        ( newState, cmd )
 
                 AddItemInputChange t ->
-                    { s | addItemInput = t } ! []
+                    ( { s | addItemInput = t }
+                    , Cmd.none
+                    )
 
                 Done id ->
                     ( s, Http.send (fromServer (\NoContent -> Delete id)) (deleteApiItemByItemId id) )
@@ -121,7 +129,7 @@ fromServer msgConstructor result =
             FromServer <| msgConstructor content
 
         Err error ->
-            Error <| toString error
+            Error <| Debug.toString error
 
 
 
@@ -131,7 +139,7 @@ fromServer msgConstructor result =
 view : Model -> Html Msg
 view state =
     div [] <|
-        [ text (toString state)
+        [ text (Debug.toString state)
         , br [] []
         ]
             ++ List.map (viewItem << Tuple.second) (toList state.items)
