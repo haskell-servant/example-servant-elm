@@ -6,7 +6,6 @@ import Dict exposing (..)
 import Html exposing (..)
 import Html.Events exposing (..)
 import Http
-import Debug
 
 
 main : Program () Model Msg
@@ -129,8 +128,26 @@ fromServer msgConstructor result =
             FromServer <| msgConstructor content
 
         Err error ->
-            Error <| Debug.toString error
+            Error <| httpErrorToString error
 
+
+httpErrorToString : Http.Error -> String
+httpErrorToString error =
+    case error of
+        Http.BadUrl s ->
+            "bad url: " ++ s
+
+        Http.Timeout ->
+            "timeout"
+
+        Http.NetworkError ->
+            "network error"
+
+        Http.BadStatus response ->
+            "bad status: " ++ response.status.message
+
+        Http.BadPayload debugString response ->
+            "bad payload: " ++ debugString
 
 
 -- VIEW
