@@ -1,13 +1,14 @@
--- This file has been generated from package.yaml by hpack version 0.28.2.
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.1.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1ad3309cc41055c81ccb4f2ce09f92329551ad94ce0888d36cde5cd31d502ea5
+-- hash: 513a2cd1e4573d0f1227c7eb6dae73ca6154d9eda5362f5f6bcd1ab29ee7f921
 
 name:           example-servant-elm
 version:        0.0.0
 build-type:     Simple
-cabal-version:  >= 1.10
 
 executable server
   main-is: Main.hs
@@ -18,7 +19,7 @@ executable server
     , base
     , containers
     , servant
-    , servant-elm
+    , servant-elm >=0.6.0.2
     , servant-server
     , transformers
     , wai
@@ -45,7 +46,7 @@ test-suite spec
     , http-types
     , servant
     , servant-client
-    , servant-elm
+    , servant-elm >=0.6.0.2
     , servant-server
     , transformers
     , wai

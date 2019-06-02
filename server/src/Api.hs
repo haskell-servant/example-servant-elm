@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -5,11 +6,10 @@
 
 module Api where
 
-import           Data.Aeson
 import           Data.Proxy
-import           GHC.Generics
 import           Servant.API
-import           Servant.Elm      (ElmType)
+import qualified Elm.Derive
+import           Elm.Module
 
 type Api =
   "api" :>
@@ -30,8 +30,6 @@ data Item
     id :: ItemId,
     text :: String
   }
-  deriving (Show, Eq, Generic)
+  deriving (Show, Eq)
 
-instance ElmType Item
-instance ToJSON Item
-instance FromJSON Item
+Elm.Derive.deriveBoth Elm.Derive.defaultOptions ''Item

@@ -5,7 +5,7 @@ dependencies:
   - warp
   - aeson
   - wai-make-assets
-  - servant-elm
+  - servant-elm >= 0.6.0.2
   - servant
   - wai
   - servant-server
