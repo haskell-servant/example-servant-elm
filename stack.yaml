@@ -1,8 +1,9 @@
-resolver: lts-12.12
+resolver: lts-13.24
 
 packages:
-  - location: ./.
-  - location:
-      git: https://www.github.com/soenkehahn/wai-make-assets
-      commit: c72a924
-    extra-dep: true
+- '.'
+
+extra-deps:
+- servant-elm-0.6.0.2
+- elm-bridge-0.5.1
+- wai-make-assets-0.2
