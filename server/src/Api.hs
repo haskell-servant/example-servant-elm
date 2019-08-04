@@ -24,7 +24,7 @@ api = Proxy
 -- types
 
 newtype ItemId = ItemId Int
-  deriving (Show, Eq, Ord, Enum, FromHttpApiData)
+  deriving (Show, Eq, Ord, Enum, FromHttpApiData, ToHttpApiData)
 
 data Item
   = Item {
