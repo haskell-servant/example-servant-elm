@@ -26,3 +26,7 @@ There's a `Makefile` included with the following targets:
 
 - This project uses <https://travis-ci.org/soenkehahn/wai-make-assets>, which is
   experimental. E.g. there's no support for serving the assets in a production setting.
+
+## More examples
+
+This repository demonstrates a servant backend and an elm frontend. More code generation examples can be found in [`haskell-servant/servant-elm`](https://github.com/haskell-servant/servant-elm/tree/master/examples).
