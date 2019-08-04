@@ -1,10 +1,8 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeOperators     #-}
 
 import           Data.List
-import           Servant.Elm
 import           Data.Text hiding (intercalate, map)
 import           Servant.Elm  (DefineElm (DefineElm), Proxy (Proxy),
                                defaultOptions, defElmImports, defElmOptions,
