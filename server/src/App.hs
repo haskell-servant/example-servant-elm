@@ -21,21 +21,16 @@ options :: Options
 options = Options "client"
 
 app :: IO Application
-app =
-  serve withAssets <$> server
+app = serve withAssets <$> server
 
 server :: IO (Server WithAssets)
 server = do
   assets <- serveAssets options
-  db <- mkDB
+  db     <- mkDB
   return (apiServer db :<|> Tagged assets)
 
 apiServer :: DB -> Server Api
-apiServer db =
-  listItems db :<|>
-  getItem db :<|>
-  postItem db :<|>
-  deleteItem db
+apiServer db = listItems db :<|> getItem db :<|> postItem db :<|> deleteItem db
 
 listItems :: DB -> Handler [ItemId]
 listItems db = liftIO $ allItemIds db
@@ -44,8 +39,7 @@ getItem :: DB -> ItemId -> Handler Item
 getItem db n = maybe (throwError err404) return =<< liftIO (lookupItem db n)
 
 postItem :: DB -> String -> Handler ItemId
-postItem db new =
-  liftIO $ insertItem db new
+postItem db new = liftIO $ insertItem db new
 
 -- fake DB
 
@@ -58,22 +52,20 @@ mkDB :: IO DB
 mkDB = DB <$> newMVar empty
 
 insertItem :: DB -> String -> IO ItemId
-insertItem (DB mvar) new = modifyMVar mvar $ \ m -> do
+insertItem (DB mvar) new = modifyMVar mvar $ \m -> do
   let newKey = case keys m of
         [] -> ItemId 0
         ks -> succ (maximum ks)
   return (insert newKey new m, newKey)
 
 lookupItem :: DB -> ItemId -> IO (Maybe Item)
-lookupItem (DB mvar) i =
-  fmap (Item i) . Data.Map.lookup i <$> readMVar mvar
+lookupItem (DB mvar) i = fmap (Item i) . Data.Map.lookup i <$> readMVar mvar
 
 allItemIds :: DB -> IO [ItemId]
-allItemIds (DB mvar) =
-  keys <$> readMVar mvar
+allItemIds (DB mvar) = keys <$> readMVar mvar
 
 deleteItem :: MonadIO m => DB -> ItemId -> m ()
 deleteItem (DB mvar) i = liftIO $ do
-  modifyMVar_ mvar $ \ m -> return (delete i m)
+  modifyMVar_ mvar $ \m -> return (delete i m)
   return ()
 
