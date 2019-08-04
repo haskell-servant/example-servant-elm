@@ -18,15 +18,13 @@ type Api =
      "item" :> ReqBody '[JSON] String :> Post '[JSON] ItemId :<|>
      "item" :> Capture "itemId" ItemId :> Delete '[JSON] ())
 
--- TODO: Changed delete to return item. More adaptions necessary
-
 api :: Proxy Api
 api = Proxy
 
 -- types
 
-newtype ItemId = ItemdId Int
-    deriving ( Show, Eq )
+newtype ItemId = ItemId Int
+  deriving (Show, Eq, Ord, Enum, FromHttpApiData)
 
 data Item
   = Item {
