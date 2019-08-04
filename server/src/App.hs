@@ -17,13 +17,16 @@ type WithAssets = Api :<|> Raw
 withAssets :: Proxy WithAssets
 withAssets = Proxy
 
+options :: Options
+options = Options "client"
+
 app :: IO Application
 app =
   serve withAssets <$> server
 
 server :: IO (Server WithAssets)
 server = do
-  assets <- serveAssets
+  assets <- serveAssets options
   db <- mkDB
   return $ apiServer db :<|> assets
 
