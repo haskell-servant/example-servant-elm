@@ -28,7 +28,8 @@ server :: IO (Server WithAssets)
 server = do
   assets <- serveAssets options
   db <- mkDB
-  return $ apiServer db :<|> assets
+  -- return $ apiServer db :<|> assets
+  return $ (apiServer db :<|> Tagged assets)
 
 apiServer :: DB -> Server Api
 apiServer db =
