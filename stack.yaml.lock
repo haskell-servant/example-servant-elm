@@ -12,12 +12,12 @@ packages:
   original:
     hackage: servant-elm-0.6.0.2
 - completed:
-    hackage: elm-bridge-0.5.1@sha256:e38bfb9dcd1e2cd119a280072f2f99ed718120c21f37f102b8318156645f06da,2421
+    hackage: elm-bridge-0.5.2@sha256:2da339de8910acd174cfeffa758ffa2e069d01f58938b5797fd2528a1906d0a6,2458
     pantry-tree:
-      size: 1084
-      sha256: cd4fd21b75bfd977b30e73249d8edd5cc21a8b7fd0dd0c7f364987e0221d626d
+      size: 1146
+      sha256: ab5ff8d2b1e38dc184b06182284e8367f07d46bda3f552daaca78e88a39a111f
   original:
-    hackage: elm-bridge-0.5.1
+    hackage: elm-bridge-0.5.2
 - completed:
     hackage: wai-make-assets-0.2@sha256:c27822194ab5f203edbc51270c8e796af4e5172023ffde68ff479e715bde75c1,2028
     pantry-tree:

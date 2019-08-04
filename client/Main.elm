@@ -1,7 +1,7 @@
 module Main exposing (FromServer(..), FromUi(..), ItemId, Model, Msg(..), fromServer, init, main, update, view, viewItem)
 
-import Browser
 import Api exposing (..)
+import Browser
 import Dict exposing (..)
 import Html exposing (..)
 import Html.Events exposing (..)
@@ -148,6 +148,7 @@ httpErrorToString error =
 
         Http.BadPayload debugString response ->
             "bad payload: " ++ debugString
+
 
 
 -- VIEW
