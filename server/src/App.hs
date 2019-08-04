@@ -41,7 +41,7 @@ listItems :: DB -> Handler [ItemId]
 listItems db = liftIO $ allItemIds db
 
 getItem :: DB -> ItemId -> Handler Item
-getItem db n = maybe (throwE err404) return =<< liftIO (lookupItem db n)
+getItem db n = maybe (throwError err404) return =<< liftIO (lookupItem db n)
 
 postItem :: DB -> String -> Handler ItemId
 postItem db new =
