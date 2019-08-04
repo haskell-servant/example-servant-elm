@@ -1,30 +1,23 @@
-module Tests exposing (addItemButton, tests)
+module Tests exposing (tests)
 
 import Expect
-import Main exposing (..)
+import Main exposing (FromUi(..), init, update)
 import Test exposing (..)
 
 
 tests : Test
 tests =
-    describe "client test suite" [ addItemButton ]
+    describe "client test suite"
+        [ test "clean add item field on AddItemButton" <|
+            \_ ->
+                let
+                    model =
+                        Tuple.first init
 
-
-addItemButton : Test
-addItemButton =
-    test "clean add item field on AddItemButton" <|
-        \_ ->
-            let
-                initState =
-                    Tuple.first init
-
-                s =
-                    { initState | addItemInput = "foo" }
-
-                ( new, _ ) =
-                    update (FromUi AddItemButton) s
-
-                result =
-                    new.addItemInput
-            in
-            Expect.equal "" result
+                    ( updatedModel, _ ) =
+                        { model | addItemInput = "foo" }
+                            |> update (Main.FromUi AddItemButton)
+                in
+                updatedModel.addItemInput
+                    |> Expect.equal ""
+        ]
