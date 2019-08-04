@@ -61,7 +61,7 @@ mkDB = DB <$> newMVar empty
 insertItem :: DB -> String -> IO ItemId
 insertItem (DB mvar) new = modifyMVar mvar $ \ m -> do
   let newKey = case keys m of
-        [] -> 0
+        [] -> ItemId 0
         ks -> succ (maximum ks)
   return (insert newKey new m, newKey)
 
@@ -77,3 +77,4 @@ deleteItem :: MonadIO m => DB -> ItemId -> m ()
 deleteItem (DB mvar) i = liftIO $ do
   modifyMVar_ mvar $ \ m -> return (delete i m)
   return ()
+
