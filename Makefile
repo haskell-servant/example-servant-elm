@@ -1,15 +1,11 @@
 all: setup build
 
-setup: client-setup server-setup
-
 build: client-build server-build
-
-client-setup:
 
 client-build:
 	(cd client ; make)
 
-server-setup:
+setup:
 	stack setup
 	stack test --only-dependencies
 
@@ -19,18 +15,7 @@ server-build:
 server-start: server-build
 	stack exec server
 
-server-start-reserve:
-	stack exec -- reserve server/src/Main.hs
-
-sensei-start:
-	stack exec -- sensei-web server/test/Spec.hs
-
-fast-test:
-	seito
-	(cd client ; make run-tests)
-	(cd client ; make)
-
-slow-test:
+test:
 	stack test
 	(cd client ; make run-tests)
 	(cd client ; make)
