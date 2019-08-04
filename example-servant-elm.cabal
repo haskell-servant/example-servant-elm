@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8a1c7a450e2488d9173cd0bc2a84072d6a89e6c05b6204f50b10ad42eb163e6a
+-- hash: d6312c7b6054a2aff2c1b2f631091b083c17145251426d82b19a69c196455dd7
 
 name:           example-servant-elm
 version:        0.0.0
@@ -18,7 +18,7 @@ executable server
       aeson
     , base
     , containers
-    , elm-bridge
+    , elm-bridge >=0.5.2
     , servant
     , servant-elm >=0.6.0.2
     , servant-server
@@ -42,7 +42,7 @@ test-suite spec
       aeson
     , base
     , containers
-    , elm-bridge
+    , elm-bridge >=0.5.2
     , hspec
     , http-client
     , http-types

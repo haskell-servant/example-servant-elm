@@ -5,5 +5,5 @@ packages:
 
 extra-deps:
 - servant-elm-0.6.0.2
-- elm-bridge-0.5.1
+- elm-bridge-0.5.2
 - wai-make-assets-0.2

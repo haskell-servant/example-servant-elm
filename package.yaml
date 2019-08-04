@@ -5,9 +5,9 @@ dependencies:
   - warp
   - aeson
   - wai-make-assets
-  - servant-elm >= 0.6.0.2
   - servant
-  - elm-bridge
+  - servant-elm >= 0.6.0.2
+  - elm-bridge >= 0.5.2
   - wai
   - servant-server
   - transformers
