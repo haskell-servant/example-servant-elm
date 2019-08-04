@@ -28,7 +28,7 @@ server :: IO (Server WithAssets)
 server = do
   assets <- serveAssets options
   db <- mkDB
-  return $ (apiServer db :<|> Tagged assets)
+  return (apiServer db :<|> Tagged assets)
 
 apiServer :: DB -> Server Api
 apiServer db =
@@ -49,7 +49,7 @@ postItem db new =
 
 -- fake DB
 
-data DB = DB (MVar (Map ItemId String))
+newtype DB = DB (MVar (Map ItemId String))
 
 debug :: DB -> IO ()
 debug (DB mvar) = readMVar mvar >>= print
@@ -65,8 +65,8 @@ insertItem (DB mvar) new = modifyMVar mvar $ \ m -> do
   return (insert newKey new m, newKey)
 
 lookupItem :: DB -> ItemId -> IO (Maybe Item)
-lookupItem (DB mvar) i = do
-  fmap (Item i) <$> Data.Map.lookup i <$> readMVar mvar
+lookupItem (DB mvar) i =
+  fmap (Item i) . Data.Map.lookup i <$> readMVar mvar
 
 allItemIds :: DB -> IO [ItemId]
 allItemIds (DB mvar) =
