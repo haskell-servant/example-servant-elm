@@ -37,7 +37,7 @@ init : ( Model, Cmd Msg )
 init =
     let
         fetch =
-            Http.send (fromServer Initial) Api.getApiItem
+            Api.getApiItem (fromServer Initial)
 
         state =
             { items = empty, addItemInput = "", error = Nothing }
@@ -75,8 +75,7 @@ update message s =
                 Initial itemIds ->
                     ( s
                     , itemIds
-                        |> List.map getApiItemByItemId
-                        |> List.map (Http.send (fromServer NewItem))
+                        |> List.map (\id -> getApiItemByItemId id (fromServer NewItem))
                         |> Cmd.batch
                     )
 
@@ -98,7 +97,7 @@ update message s =
                             s.addItemInput
 
                         cmd =
-                            Http.send (fromServer (\id -> NewItem (Item id new))) (postApiItem new)
+                            postApiItem new (fromServer (\id -> NewItem (Item id new)))
 
                         newState =
                             { s | addItemInput = "" }
@@ -115,7 +114,7 @@ update message s =
                     )
 
                 Done id ->
-                    ( s, Http.send (fromServer (\NoContent -> Delete id)) (deleteApiItemByItemId id) )
+                    ( s, deleteApiItemByItemId id (fromServer (\() -> Delete id)) )
 
         Error msg ->
             ( { s | error = Just msg }, Cmd.none )
@@ -143,11 +142,11 @@ httpErrorToString error =
         Http.NetworkError ->
             "network error"
 
-        Http.BadStatus response ->
-            "bad status: " ++ response.status.message
+        Http.BadStatus status ->
+            "bad status: " ++ String.fromInt status
 
-        Http.BadPayload debugString response ->
-            "bad payload: " ++ debugString
+        Http.BadBody response ->
+            "bad payload: " ++ response
 
 
 
