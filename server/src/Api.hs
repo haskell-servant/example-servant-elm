@@ -16,7 +16,7 @@ type Api =
     ("item" :> Get '[JSON] [ItemId] :<|>
      "item" :> Capture "itemId" ItemId :> Get '[JSON] Item :<|>
      "item" :> ReqBody '[JSON] String :> Post '[JSON] ItemId :<|>
-     "item" :> Capture "itemId" ItemId :> Delete '[JSON] Item)
+     "item" :> Capture "itemId" ItemId :> Delete '[JSON] ())
 
 -- TODO: Changed delete to return item. More adaptions necessary
 
