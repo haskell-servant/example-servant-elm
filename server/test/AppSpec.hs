@@ -1,13 +1,13 @@
 module AppSpec where
 
-import           Control.Exception                        ( throwIO
-                                                          , ErrorCall(..)
-                                                          )
+import           Control.Exception              ( throwIO
+                                                , ErrorCall(..)
+                                                )
 import           Control.Monad.Trans.Except
-import           Network.HTTP.Client                      ( Manager
-                                                          , newManager
-                                                          , defaultManagerSettings
-                                                          )
+import           Network.HTTP.Client            ( Manager
+                                                , newManager
+                                                , defaultManagerSettings
+                                                )
 import           Network.HTTP.Types
 import           Network.Wai.Handler.Warp
 import           Servant.API
@@ -15,7 +15,7 @@ import           Servant.Client
 import           Test.Hspec
 
 import           Api
-import           App                                      ( app )
+import           App                            ( app )
 
 getItemIds :: ClientM [ItemId]
 getItem :: ItemId -> ClientM Item
@@ -71,8 +71,8 @@ withApp action = testWithApplication app $ \port -> do
   let url = BaseUrl Http "localhost" port ""
   action (manager, url)
 
-errorStatus :: ServantError -> Maybe Status
+errorStatus :: ClientError -> Maybe Status
 errorStatus servantError = case servantError of
-  FailureResponse response -> Just $ responseStatusCode response
-  _                        -> Nothing
+  FailureResponse _ response -> Just $ responseStatusCode response
+  _                          -> Nothing
 

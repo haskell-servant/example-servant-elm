@@ -1,4 +1,4 @@
-client/Api.elm
+client/src/Api.elm
 client/elm-stuff/
 client/tests/elm-stuff/
 client/tests.js

@@ -9,7 +9,6 @@ module Api where
 import           Data.Proxy
 import           Servant.API
 import qualified Elm.Derive
-import           Elm.Module
 
 type Api =
   "api" :>

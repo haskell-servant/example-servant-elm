@@ -1,10 +1,10 @@
-../assets/index.html: Api.elm Main.elm
-	elm make Main.elm
+../assets/index.html: src/Api.elm src/Main.elm
+	elm make src/Main.elm
 	mv index.html ../assets/
 
-Api.elm: GenerateElm.hs ../server/src/Api.hs
+src/Api.elm: GenerateElm.hs ../server/src/Api.hs
 	(cd ../ ; stack exec -- runhaskell -iserver/src client/GenerateElm.hs)
 
-run-tests: Api.elm
+run-tests: src/Api.elm
 	elm-test
 
