@@ -1,9 +1,9 @@
-resolver: lts-13.24
+resolver: lts-15.9
 
 packages:
 - '.'
 
 extra-deps:
-- servant-elm-0.6.0.2
-- elm-bridge-0.5.2
+- servant-elm-0.7.2
+- elm-bridge-0.6.0
 - wai-make-assets-0.2

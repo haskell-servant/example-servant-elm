@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d6312c7b6054a2aff2c1b2f631091b083c17145251426d82b19a69c196455dd7
+-- hash: a94383adc346523b4732c048527a98afa3cf92dc59331239325cf06b85bc7657
 
 name:           example-servant-elm
 version:        0.0.0
@@ -18,10 +18,11 @@ executable server
       aeson
     , base
     , containers
-    , elm-bridge >=0.5.2
+    , elm-bridge
     , servant
-    , servant-elm >=0.6.0.2
+    , servant-elm
     , servant-server
+    , text
     , transformers
     , wai
     , wai-make-assets
@@ -42,14 +43,15 @@ test-suite spec
       aeson
     , base
     , containers
-    , elm-bridge >=0.5.2
+    , elm-bridge
     , hspec
     , http-client
     , http-types
     , servant
     , servant-client
-    , servant-elm >=0.6.0.2
+    , servant-elm
     , servant-server
+    , text
     , transformers
     , wai
     , wai-make-assets

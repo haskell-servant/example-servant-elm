@@ -4,7 +4,6 @@ module App where
 
 import           Control.Concurrent
 import           Control.Monad.IO.Class
-import           Control.Monad.Trans.Except
 import           Data.Map
 import           Network.Wai
 import           Network.Wai.MakeAssets

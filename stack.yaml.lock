@@ -5,19 +5,19 @@
 
 packages:
 - completed:
-    hackage: servant-elm-0.6.0.2@sha256:ba836f5fdad315d8fec83380a8aabea6fc1a90f9f0681fe79e49d5e9bfa1e5e1,4540
+    hackage: servant-elm-0.7.2@sha256:27e45a456ad56ba59502549a59ce66f7229a17bbce72c413cbf8615ed074d754,4579
     pantry-tree:
-      size: 1938
-      sha256: 8e6e7d4cafb2a968b934e367642e1661989ea561ad205c8eb75d1df3b6525598
+      size: 2081
+      sha256: 4b10f1da950fea1a0bcaf74a9e68dc0a1c0136e8c09a136b9c3f6c89e09ad21a
   original:
-    hackage: servant-elm-0.6.0.2
+    hackage: servant-elm-0.7.2
 - completed:
-    hackage: elm-bridge-0.5.2@sha256:2da339de8910acd174cfeffa758ffa2e069d01f58938b5797fd2528a1906d0a6,2458
+    hackage: elm-bridge-0.6.0@sha256:7eddd8f82a7765bbc65f5146ad3a4e00eb63ec9380ce3511d6c87144d1726bf1,2458
     pantry-tree:
       size: 1146
-      sha256: ab5ff8d2b1e38dc184b06182284e8367f07d46bda3f552daaca78e88a39a111f
+      sha256: 82357b8e8e3f22583128bef0e2687fbb9aaaafdd19a803941ced3e4fb7747c48
   original:
-    hackage: elm-bridge-0.5.2
+    hackage: elm-bridge-0.6.0
 - completed:
     hackage: wai-make-assets-0.2@sha256:c27822194ab5f203edbc51270c8e796af4e5172023ffde68ff479e715bde75c1,2028
     pantry-tree:
@@ -27,7 +27,7 @@ packages:
     hackage: wai-make-assets-0.2
 snapshots:
 - completed:
-    size: 498402
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/13/24.yaml
-    sha256: 33e96adfe24f112b62f6edd22565cdbaa13155703bbfbfdc3d0a9bc6138ae7bf
-  original: lts-13.24
+    size: 492027
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/9.yaml
+    sha256: 11394dc975e96c2fea90f7f2b3229630d46351a092ebcec78f0a56403930b429
+  original: lts-15.9
