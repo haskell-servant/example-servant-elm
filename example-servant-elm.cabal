@@ -1,10 +1,8 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.2.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: a94383adc346523b4732c048527a98afa3cf92dc59331239325cf06b85bc7657
 
 name:           example-servant-elm
 version:        0.0.0
@@ -12,6 +10,10 @@ build-type:     Simple
 
 executable server
   main-is: Main.hs
+  other-modules:
+      Api
+      App
+      Paths_example_servant_elm
   hs-source-dirs:
       server/src
   build-depends:
@@ -27,15 +29,17 @@ executable server
     , wai
     , wai-make-assets
     , warp
-  other-modules:
-      Api
-      App
-      Paths_example_servant_elm
   default-language: Haskell2010
 
 test-suite spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
+  other-modules:
+      AppSpec
+      Api
+      App
+      Main
+      Paths_example_servant_elm
   hs-source-dirs:
       server/test
       server/src
@@ -56,10 +60,4 @@ test-suite spec
     , wai
     , wai-make-assets
     , warp >=3.2.3
-  other-modules:
-      AppSpec
-      Api
-      App
-      Main
-      Paths_example_servant_elm
   default-language: Haskell2010
